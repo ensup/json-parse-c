@@ -1,0 +1,61 @@
+# .github/workflows/build.yml
+
+name: Windows-Build
+
+on:
+
+  push:
+
+    branches: [master]
+
+  pull_request:
+
+    branches: [master]
+
+jobs:
+
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+
+      - name: Checkout code
+
+        uses: actions/checkout@v2
+
+      - name: Set up MSVC environment
+
+        uses: microsoft/setup-msbuild@v1.0.2
+
+        with:
+
+          msbuild-version: '16.0'
+
+      - name: Install LLVM for Clang
+
+        run: |
+
+          choco install llvm -y
+
+      - name: Build with Clang
+
+        run: |
+
+          mkdir build && cd build
+
+          clang ../main.c -o my_app.exe
+
+#          cmake -G "Ninja" -DCMAKE_C_COMPILER=clang.exe -DCMAKE_CXX_COMPILER=clang++.exe ..
+
+#          cmake --build .
+
+      - name: Upload Artifact
+
+        uses: actions/upload-artifact@v2
+
+        with:
+
+          name: my_app
+
+          path: ./build/my_app.exe
